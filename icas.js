@@ -1,3 +1,5 @@
+// var Validator = require('jsonschema').Validator
+
 // Assumes argument is simply a CID, and does not parse the object it returns
 this.loadCID = async function(arg, ipfsnode){
 
@@ -23,6 +25,8 @@ this.loadCID = async function(arg, ipfsnode){
 
 
 this.resolveString = async function(arg, ipfsnode) {
+  console.log('---')
+  console.log(arg)
   if (!((typeof arg) == 'string')) {
     return {"r": false, "errors":['not a string'], "data":arg}
   }
@@ -65,12 +69,15 @@ this.eval = async function(icasFunction, icasContent, ipfsnode) {
   // If can't find it, return that something is wrong with the function
   parsedFunction = await this.resolveString(icasFunction, ipfsnode)
   if (!(parsedFunction.r)){return {"r": false, "errors":parsedFunction.errors, "data":null}}
-  exec = null
-  try{exec = parsedFunction.data.exec}
-  catch{return {"r": false, "errors":['could not find function exec'], "data":null}}
+  exec = parsedFunction.data.exec
+  console.log(parsedFunction)
+  if(exec=='undefined'){return {"r": false, "errors":['could not find function exec'], "data":null}}
 
   // Try finding the exec code and the format. If can't find, return something wrong with exec
+  console.log('>>>exec<<<')
+  console.log(exec)
   parsedExec = await this.resolveString(exec, ipfsnode)
+  console.log(parsedExec)
   if (!(parsedExec.r)){return {"r": false, "errors":parsedExec.errors, "data":null}}
   execFormat = parsedExec.data.format
   if(execFormat == 'undefined'){return {"r": false, "errors":['could not find exec format'], "data":null}}
